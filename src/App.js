@@ -32,6 +32,7 @@ function App() {
       previousChats.map((_, index) => `Chat ${index + 1}`)
   );
   const [showWelcome, setShowWelcome] = useState(true);
+  const [currentPrompt, setCurrentPrompt] = useState(null);
   const chatBoxRef = useRef(null);
 
   useEffect(() => {
@@ -257,8 +258,68 @@ function App() {
       ]);
     }
   };
+
+
+  const handlePromptClick = (promptType) => {
+    setShowWelcome(false);
+    setCurrentPrompt(promptType);
+  
+    if (promptType === "smartContract") {
+      // Add a message to chat history prompting user for input
+      setChat((prevChat) => [
+        ...prevChat,
+        {
+          sender: "bot",
+          text: "Please provide specifications for your smart contract (e.g., mint, burn, pause).",
+          time: new Date().toLocaleTimeString(),
+        },
+      ]);
+    }
+  
+    if (promptType === "nft") {
+      setChat((prevChat) => [
+        ...prevChat,
+        {
+          sender: "bot",
+          text: "Please provide details about the NFT collection you want to create (e.g., name, symbol, max supply).",
+          time: new Date().toLocaleTimeString(),
+        },
+      ]);
+    }
+  
+    if (promptType === "token") {
+      setChat((prevChat) => [
+        ...prevChat,
+        {
+          sender: "bot",
+          text: "Please provide details for your token (e.g., name, symbol, total supply).",
+          time: new Date().toLocaleTimeString(),
+        },
+      ]);
+    }
+  
+    if (promptType === "audit") {
+      setChat((prevChat) => [
+        ...prevChat,
+        {
+          sender: "bot",
+          text: "Please paste the smart contract code you want to audit.",
+          time: new Date().toLocaleTimeString(),
+        },
+      ]);
+    }
+  };
+  
   
 
+  const handleCopy = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      alert("Code copied to clipboard!");
+    } catch (err) {
+      console.error("Failed to copy: ", err);
+    }
+  };
   
 
 
@@ -270,6 +331,42 @@ function App() {
     navigator.clipboard.writeText(msg.text);
     alert("Message copied!");
   };
+  const parseMessage = (text) => {
+    const parts = [];
+    const regex = /```(.*?)```/gs;
+    let lastIndex = 0;
+    let match;
+  
+    while ((match = regex.exec(text)) !== null) {
+      // Push the text before the code block
+      if (match.index > lastIndex) {
+        parts.push({
+          type: "text",
+          content: text.slice(lastIndex, match.index).trim(),
+        });
+      }
+  
+      // Push the code block content
+      parts.push({
+        type: "code",
+        content: match[1].replace(/^solidity\n/, "").trim(), // Remove 'solidity' if present
+      });
+  
+      lastIndex = regex.lastIndex;
+    }
+  
+    // Push any remaining text after the last code block
+    if (lastIndex < text.length) {
+      parts.push({
+        type: "text",
+        content: text.slice(lastIndex).trim(),
+      });
+    }
+  
+    return parts.filter(part => part.content !== ""); // Remove empty strings
+  };
+  
+  
 
   return (
     <div className={`app-container ${darkMode ? "dark-mode" : ""}`}>
@@ -327,10 +424,40 @@ function App() {
 
 
         {showWelcome ? (
-          <div className="welcome-screen">
-            <h2>Welcome! How can I help you today?</h2>
-          </div>
-        ) : (
+  <div className="welcome-screen">
+    <h2>Welcome! How can I help you today?</h2>
+    
+    <div className="welcome-buttons">
+      <button
+        className="prompt-button"
+        onClick={() => handlePromptClick("smartContract")}
+      >
+        📝 Generate Smart Contract
+      </button>
+
+      <button
+        className="prompt-button"
+        onClick={() => handlePromptClick("nft")}
+      >
+        🎨 Generate NFT
+      </button>
+
+      <button
+        className="prompt-button"
+        onClick={() => handlePromptClick("token")}
+      >
+        💰 Create Token
+      </button>
+
+      <button
+        className="prompt-button"
+        onClick={() => handlePromptClick("audit")}
+      >
+        🔍 Audit Smart Contract
+      </button>
+    </div>
+  </div>
+) : (
         <div className="chat-box" ref={chatBoxRef}>
   {chat.map((msg, index) => (
     <div key={index} className={`chat-message ${msg.sender}`}>
@@ -350,14 +477,27 @@ function App() {
 
       {/* Message Content */}
       <div className="message-text">
-  {msg.text.includes("```") ? (
-    <SyntaxHighlighter language="solidity" style={oneDark}>
-      {msg.text.replace(/```(solidity)?/g, "").trim()}
-    </SyntaxHighlighter>
-  ) : (
-    <span>{msg.text}</span>
-  )}
+  {parseMessage(msg.text).map((part, idx) => (
+    part.type === "code" ? (
+      <div key={idx} className="code-container">
+        <button
+          className="copy-button"
+          onClick={() => handleCopy(part.content)}
+        >
+          <FaCopy />
+        </button>
+
+        <SyntaxHighlighter language="solidity" style={oneDark} customStyle={{ borderRadius: "10px" }}>
+          {part.content}
+        </SyntaxHighlighter>
+      </div>
+    ) : (
+      <p key={idx}>{part.content}</p>
+    )
+  ))}
 </div>
+
+
 
 
       <span className="message-time">{msg.time}</span>
