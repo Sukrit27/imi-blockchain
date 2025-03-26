@@ -16,6 +16,8 @@ import "./App.css";
 import logor from "./assets/logor.png";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'; // Choose your theme!
+import { BrowserProvider, ContractFactory } from "ethers";
+
 
 
 function App() {
@@ -365,6 +367,46 @@ function App() {
   
     return parts.filter(part => part.content !== ""); // Remove empty strings
   };
+
+
+
+  async function deployContract(solidityCode) {
+    if (!window.ethereum) {
+      alert("🦊 MetaMask is required to deploy the contract.");
+      return;
+    }
+  
+    try {
+      // Request MetaMask connection
+      const provider = new BrowserProvider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      const signer = await provider.getSigner();
+  
+      alert("✅ Wallet connected: " + (await signer.getAddress()));
+  
+      // Replace with actual compiled contract bytecode and ABI
+      const bytecode = "0x..."; // Compiled contract bytecode
+      const abi = []; // Compiled contract ABI
+  
+      if (!bytecode || !abi.length) {
+        alert("❌ Error: Contract compilation required before deployment.");
+        return;
+      }
+  
+      // Deploy contract
+      const contractFactory = new ContractFactory(abi, bytecode, signer);
+      const contract = await contractFactory.deploy();
+  
+      alert("⏳ Deploying contract...");
+      await contract.waitForDeployment();
+  
+      alert(`🎉 Contract deployed at: ${contract.target}`);
+    } catch (error) {
+      console.error("Deployment Error:", error);
+      alert(`❌ Deployment failed: ${error.message}`);
+    }
+  }
+  
   
   
 
@@ -477,24 +519,33 @@ function App() {
 
       {/* Message Content */}
       <div className="message-text">
-  {parseMessage(msg.text).map((part, idx) => (
-    part.type === "code" ? (
-      <div key={idx} className="code-container">
-        <button
-          className="copy-button"
-          onClick={() => handleCopy(part.content)}
-        >
-          <FaCopy />
-        </button>
+      {parseMessage(msg.text).map((part, idx) => (
+  part.type === "code" ? (
+    <div key={idx} className="code-container">
+      <button
+        className="copy-button"
+        onClick={() => handleCopy(part.content)}
+      >
+        <FaCopy />
+      </button>
 
-        <SyntaxHighlighter language="solidity" style={oneDark} customStyle={{ borderRadius: "10px" }}>
-          {part.content}
-        </SyntaxHighlighter>
-      </div>
-    ) : (
-      <p key={idx}>{part.content}</p>
-    )
-  ))}
+      <SyntaxHighlighter language="solidity" style={oneDark} customStyle={{ borderRadius: "10px" }}>
+        {part.content}
+      </SyntaxHighlighter>
+
+      {/* Deploy Button */}
+      <button
+        className="deploy-button"
+        onClick={() => deployContract(part.content)}
+      >
+        🚀 Deploy
+      </button>
+    </div>
+  ) : (
+    <p key={idx}>{part.content}</p>
+  )
+))}
+
 </div>
 
 
@@ -503,7 +554,8 @@ function App() {
       <span className="message-time">{msg.time}</span>
     </div>
   ))}
-</div>)};
+</div>
+)};
 
         <div className="chat-input">
           <input

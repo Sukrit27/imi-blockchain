@@ -60,17 +60,19 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px;
+  padding: 40px;
   background: white;
   border-bottom: 1px solid #ddd;
+  position: relative;
 }
 
 .dark-mode .chat-header {
-  background: #333;
+  background: #222; 
 }
 
 .logo {
   height: 40px;
+  margin-right: 10px;
 }
 
 .dark-mode-toggle {
@@ -79,6 +81,18 @@
   font-size: 20px;
   cursor: pointer;
 }
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+
+
+
 
 /* User Profile Button */
 .user-profile {
@@ -108,35 +122,15 @@
   border-radius: 10px;
   word-wrap: break-word;
   position: relative;
-}
-
-
-
-/* Timestamp Position */
-/* Chat Messages */
-.chat-message {
-  max-width: 60%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 10px;
-  word-wrap: break-word;
-  position: relative;
   display: flex;
   flex-direction: column;
 }
 
-/* User and Bot Messages */
-.chat-message.user {
-  align-self: flex-end;
-  background: linear-gradient(135deg, #4a90e2, #007bff);
-  color: white;
-}
+/* Timestamp Position */
+/* Chat Messages */
 
-.chat-message.bot {
-  align-self: flex-start;
-  background: linear-gradient(135deg, #e6e6e6, #cfcfcf);
-  color: black;
-}
+/* User and Bot Messages */
+
 
 .dark-mode .chat-message.bot {
   background: linear-gradient(135deg, #444, #222);
@@ -166,33 +160,8 @@
 /* Sidebar */
 
 
-/* Chat Header - Aligning Elements */
-.chat-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px;
-  background: white;
-  border-bottom: 1px solid #ddd;
-  position: relative;
-}
 
-.dark-mode .chat-header {
-  background: #333;
-}
 
-.logo-container {
-  display: flex;
-  align-items: center;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.logo {
-  height: 40px;
-  margin-right: 10px;
-}
 
 .header-right {
   position: absolute;
@@ -267,37 +236,7 @@
 
 
 /* Chat Container */
-.chat-container {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  overflow: hidden;
-  transition: width 0.3s ease;
-}
 
-.chat-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 15px;
-  background: white;
-  border-bottom: 1px solid #ddd;
-  position: relative;
-}
-
-.dark-mode .chat-header {
-  background: #222; /* Same shade as sidebar */
-}
-
-.logo-container {
-  display: flex;
-  align-items: center;
-}
-
-.logo {
-  height: 40px;
-  margin-right: 10px;
-}
 
 /* User Profile Positioned at the Top-Right */
 
@@ -341,19 +280,7 @@
 
 
 /* Chat Header */
-.chat-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 40px; /* Increased padding for thickness */
-  background: white;
-  border-bottom: 1px solid #ddd;
-  position: relative;
-}
 
-.dark-mode .chat-header {
-  background: #222; /* Matching dark mode */
-}
 
 /* Dark Mode Toggle Positioned in the Center */
 .dark-mode-toggle {
@@ -397,6 +324,11 @@
   align-self: flex-start;
   background: linear-gradient(135deg, #e6e6e6, #cfcfcf);
   color: black;
+}
+.dark-mode .chat-message.user {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #4f5050, #232222);
+  color: white;
 }
 
 .dark-mode .chat-message.bot {
@@ -696,16 +628,7 @@
   margin-bottom: 10px;
 }
 
-.chat-message.user {
-  background-color: #0084ff;
-  color: white;
-  align-self: flex-end;
-}
 
-.chat-message.bot {
-  background-color: #e0e0e0;
-  align-self: flex-start;
-}
 
 
 
@@ -900,6 +823,9 @@
 .copy-button:hover {
   background: linear-gradient(45deg, #a855f7, #ec4899, #6c63ff);
 }
+
+
+
 
 
 
